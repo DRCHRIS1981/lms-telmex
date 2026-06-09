@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntelisisQ Academy — LMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="lms-root">
+
+    <!-- TOP NAV -->
+    <nav class="topnav">
+      <div class="logo">
+        <div class="logo-mark">IQ</div>
+        IntelisisQ Academy
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showView('dashboard')">
+          <i class="ti ti-home"></i> Inicio
+        </button>
+        <button class="nav-tab" onclick="showView('lesson')">
+          <i class="ti ti-book"></i> Lecciones
+        </button>
+        <button class="nav-tab" onclick="showView('quiz')">
+          <i class="ti ti-clipboard-check"></i> Quiz
+        </button>
+        <button class="nav-tab" onclick="showView('progress')">
+          <i class="ti ti-chart-bar"></i> Progreso
+        </button>
+        <button class="nav-tab" onclick="showView('certificate')">
+          <i class="ti ti-award"></i> Certificado
+        </button>
+      </div>
+      <div class="user-pill">
+        <div class="avatar">AR</div>
+        Ana Ramírez
+      </div>
+    </nav>
+
+    <div class="main-layout">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-label">Módulos</div>
+          <button class="sidebar-item active" onclick="showView('dashboard')">
+            <i class="ti ti-layout-dashboard"></i> Dashboard
+          </button>
+          <button class="sidebar-item" onclick="showView('lesson'); setLesson(0)">
+            <i class="ti ti-database"></i> SQL Fundamentos
+            <span class="badge">12</span>
+          </button>
+          <button class="sidebar-item" onclick="showView('lesson'); setLesson(4)">
+            <i class="ti ti-building-factory-2"></i> Intelisis ERP
+            <span class="badge">9</span>
+          </button>
+          <button class="sidebar-item" onclick="showView('lesson'); setLesson(8)">
+            <i class="ti ti-code"></i> SDK Intelisis
+            <span class="badge">8</span>
+          </button>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-label">Mi avance</div>
+          <button class="sidebar-item" onclick="showView('progress')">
+            <i class="ti ti-chart-line"></i> Ver progreso
+          </button>
+          <button class="sidebar-item" onclick="showView('quiz')">
+            <i class="ti ti-pencil"></i> Evaluaciones
+          </button>
+          <button class="sidebar-item" onclick="showView('certificate')">
+            <i class="ti ti-award"></i> Certificados
+          </button>
+        </div>
+        <div class="progress-ring">
+          <div class="prog-label">Progreso general</div>
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:42%; background:#185FA5;"></div>
+          </div>
+          <div style="font-size:12px; color:#888; margin-top:4px;">42% completado</div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main>
+
+        <!-- DASHBOARD -->
+        <div class="view active" id="view-dashboard">
+          <div class="page-header">
+            <h1>Bienvenido Christian</h1>
+            <p>Continúa donde lo dejaste — tienes 3 lecciones pendientes esta semana.</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Lecciones completadas</div>
+              <div class="stat-value">14</div>
+              <div class="stat-sub">de 29 totales</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Promedio en quizzes</div>
+              <div class="stat-value">83%</div>
+              <div class="stat-sub">+5% vs semana pasada</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Tiempo de estudio</div>
+              <div class="stat-value">6.4h</div>
+              <div class="stat-sub">este mes</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Certificados</div>
+              <div class="stat-value">1</div>
+              <div class="stat-sub">SQL completado</div>
+            </div>
+          </div>
+
+          <div class="section-title">Continuar aprendiendo</div>
+          <div class="course-grid">
+            <div class="course-card" onclick="showView('lesson'); setLesson(0)">
+              <div class="course-banner" style="background:#EBF4FD; font-size:32px; display:flex; align-items:center; justify-content:center; height:72px;">🗄️</div>
+              <div class="course-body">
+                <span class="course-tag tag-sql">SQL</span>
+                <div class="course-title">SQL para reportes en Intelisis</div>
+                <div class="course-meta"><i class="ti ti-clock"></i> 5h 30min · 12 lecciones</div>
+                <div class="course-progress">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; margin-top:8px;"><span>Progreso</span><span>75%</span></div>
+                  <div class="course-prog-bar"><div class="course-prog-fill" style="width:75%; background:#185FA5;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="course-card" onclick="showView('lesson'); setLesson(4)">
+              <div class="course-banner" style="background:#E1F5EE; font-size:32px; display:flex; align-items:center; justify-content:center; height:72px;">🏭</div>
+              <div class="course-body">
+                <span class="course-tag tag-erp">ERP</span>
+                <div class="course-title">Intelisis ERP: Módulos clave</div>
+                <div class="course-meta"><i class="ti ti-clock"></i> 4h 15min · 9 lecciones</div>
+                <div class="course-progress">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; margin-top:8px;"><span>Progreso</span><span>33%</span></div>
+                  <div class="course-prog-bar"><div class="course-prog-fill" style="width:33%; background:#1D9E75;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="course-card" onclick="showView('lesson'); setLesson(8)">
+              <div class="course-banner" style="background:#FAEEDA; font-size:32px; display:flex; align-items:center; justify-content:center; height:72px;">⚙️</div>
+              <div class="course-body">
+                <span class="course-tag tag-sdk">SDK</span>
+                <div class="course-title">SDK Intelisis: Integración y APIs</div>
+                <div class="course-meta"><i class="ti ti-clock"></i> 6h · 8 lecciones</div>
+                <div class="course-progress">
+                  <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; margin-top:8px;"><span>Progreso</span><span>12%</span></div>
+                  <div class="course-prog-bar"><div class="course-prog-fill" style="width:12%; background:#BA7517;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">Quiz recomendado</div>
+          <div class="quiz-cta">
+            <div class="quiz-cta-icon">📝</div>
+            <div class="quiz-cta-text">
+              <strong>SQL: JOINs y subconsultas</strong>
+              <span>10 preguntas · ~8 minutos · Nivel intermedio</span>
+            </div>
+            <button class="btn-primary" onclick="showView('quiz')">Empezar</button>
+          </div>
+        </div>
+
+        <!-- LESSON VIEW -->
+        <div class="view" id="view-lesson">
+          <div class="page-header">
+            <h1 id="lesson-module-title">SQL Fundamentos</h1>
+          </div>
+          <div class="lesson-layout">
+            <div>
+              <div class="lesson-player">
+                <div class="video-placeholder">
+                  <div class="play-btn"><i class="ti ti-player-play"></i></div>
+                  <div class="video-label" id="lesson-video-label">Cargando lección...</div>
+                </div>
+                <div class="lesson-info">
+                  <div class="lesson-title" id="lesson-title"></div>
+                  <div class="lesson-body" id="lesson-body"></div>
+                  <pre class="code-block" id="lesson-code"></pre>
+                  <div class="lesson-body" id="lesson-extra"></div>
+                  <div class="lesson-nav">
+                    <button class="btn-primary" onclick="nextLesson()">Siguiente lección <i class="ti ti-arrow-right"></i></button>
+                    <button class="btn-secondary" onclick="showView('quiz')">Ir al quiz</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="lessons-list-header">Contenido del módulo</div>
+              <div id="lessons-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUIZ VIEW -->
+        <div class="view" id="view-quiz">
+          <div class="page-header">
+            <h1>Quiz: SQL en Intelisis</h1>
+          </div>
+          <div class="quiz-container">
+            <div class="quiz-header">
+              <span class="quiz-progress-text" id="q-counter">Pregunta 1 de 4</span>
+              <div class="quiz-prog"><div class="quiz-prog-fill" id="q-prog-fill" style="width:25%"></div></div>
+            </div>
+            <div id="quiz-area"></div>
+            <div id="quiz-nav" style="display:flex; gap:8px; margin-top:4px;">
+              <button class="btn-primary" id="btn-check" onclick="checkAnswer()">Verificar respuesta</button>
+              <button class="btn-secondary" id="btn-next" onclick="nextQuestion()" style="display:none;">Siguiente <i class="ti ti-arrow-right"></i></button>
+            </div>
+            <div id="quiz-result" style="display:none;" class="quiz-result-card">
+              <div style="font-size:36px; margin-bottom:12px;">🎉</div>
+              <div class="result-score" id="result-score"></div>
+              <div class="result-msg" id="result-msg"></div>
+              <button class="btn-primary" onclick="resetQuiz()">Intentar de nuevo</button>
+              <button class="btn-secondary" style="margin-left:8px;" onclick="showView('certificate')">Ver certificado</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRESS VIEW -->
+        <div class="view" id="view-progress">
+          <div class="page-header">
+            <h1>Mi progreso</h1>
+            <p>Seguimiento detallado por módulo y actividad reciente.</p>
+          </div>
+          <div class="progress-grid">
+            <div class="module-progress-card">
+              <div class="mp-header">
+                <div><span class="course-tag tag-sql" style="margin-bottom:4px; display:inline-block;">SQL</span><div class="mp-title">SQL Fundamentos</div></div>
+                <div class="mp-pct">75%</div>
+              </div>
+              <div class="mp-bar"><div class="mp-fill" style="width:75%; background:#185FA5;"></div></div>
+              <div class="mp-lessons">
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>SELECT y WHERE</div>
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>JOINs</div>
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>Subconsultas</div>
+                <div class="mp-lesson-row"><div class="dot dot-prog"></div>Funciones de agregación</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Procedimientos almacenados</div>
+              </div>
+            </div>
+            <div class="module-progress-card">
+              <div class="mp-header">
+                <div><span class="course-tag tag-erp" style="margin-bottom:4px; display:inline-block;">ERP</span><div class="mp-title">Intelisis ERP</div></div>
+                <div class="mp-pct">33%</div>
+              </div>
+              <div class="mp-bar"><div class="mp-fill" style="width:33%; background:#1D9E75;"></div></div>
+              <div class="mp-lessons">
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>Arquitectura del sistema</div>
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>Módulo Contabilidad</div>
+                <div class="mp-lesson-row"><div class="dot dot-prog"></div>Módulo Inventarios</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Módulo Ventas</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Configuración avanzada</div>
+              </div>
+            </div>
+            <div class="module-progress-card">
+              <div class="mp-header">
+                <div><span class="course-tag tag-sdk" style="margin-bottom:4px; display:inline-block;">SDK</span><div class="mp-title">SDK Intelisis</div></div>
+                <div class="mp-pct">12%</div>
+              </div>
+              <div class="mp-bar"><div class="mp-fill" style="width:12%; background:#BA7517;"></div></div>
+              <div class="mp-lessons">
+                <div class="mp-lesson-row"><div class="dot dot-done"></div>Instalación del SDK</div>
+                <div class="mp-lesson-row"><div class="dot dot-prog"></div>Autenticación y tokens</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Endpoints principales</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Webhooks</div>
+                <div class="mp-lesson-row"><div class="dot dot-pend"></div>Pruebas e integración</div>
+              </div>
+            </div>
+            <div class="module-progress-card cert-summary-card">
+              <div style="font-size:32px; margin-bottom:8px;">🏆</div>
+              <div style="font-size:16px; font-weight:600; margin-bottom:4px;">1 certificado obtenido</div>
+              <div style="font-size:13px; color:#888;">SQL Fundamentos</div>
+              <button class="btn-primary" style="margin-top:16px;" onclick="showView('certificate')">Ver certificado</button>
+            </div>
+          </div>
+
+          <div class="section-title">Actividad reciente</div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon ai-blue"><i class="ti ti-check"></i></div>
+              <div class="activity-text">
+                <div class="activity-name">Lección completada: JOINs en SQL</div>
+                <div class="activity-time">Hace 2 horas</div>
+              </div>
+              <span class="activity-badge badge-done">Completado</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-amber"><i class="ti ti-clipboard-check"></i></div>
+              <div class="activity-text">
+                <div class="activity-name">Quiz: SELECT y WHERE — 90%</div>
+                <div class="activity-time">Ayer a las 16:30</div>
+              </div>
+              <span class="activity-badge badge-done">Aprobado</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-teal"><i class="ti ti-player-play"></i></div>
+              <div class="activity-text">
+                <div class="activity-name">Iniciado: Módulo Inventarios ERP</div>
+                <div class="activity-time">Hace 2 días</div>
+              </div>
+              <span class="activity-badge badge-prog">En curso</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon ai-green"><i class="ti ti-award"></i></div>
+              <div class="activity-text">
+                <div class="activity-name">Certificado obtenido: SQL Fundamentos</div>
+                <div class="activity-time">Hace 4 días</div>
+              </div>
+              <span class="activity-badge badge-done">Certificado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CERTIFICATE VIEW -->
+        <div class="view" id="view-certificate">
+          <div class="page-header">
+            <h1>Certificados</h1>
+            <p>Certificados obtenidos al completar un módulo con 80% o más.</p>
+          </div>
+          <div class="cert-wrapper">
+            <div class="certificate">
+              <div class="cert-accent"></div>
+              <div class="cert-logo-big">IntelisisQ Academy</div>
+              <div class="cert-headline">Certifica que</div>
+              <div class="cert-name">Ana Ramírez</div>
+              <div class="cert-headline" style="margin-top:4px;">ha completado satisfactoriamente el curso</div>
+              <div class="cert-course">SQL para reportes en Intelisis</div>
+              <div class="cert-desc">Incluyendo fundamentos de SQL, consultas con JOINs, subconsultas, funciones de agregación y generación de reportes operativos dentro de la plataforma Intelisis ERP.</div>
+              <div class="cert-divider"></div>
+              <div class="cert-footer">
+                <div class="cert-sig">
+                  <div class="cert-sig-line"></div>
+                  <div class="cert-sig-name">Lic. Marco Herrera</div>
+                  <div class="cert-sig-role">Director Académico</div>
+                </div>
+                <div class="cert-seal"><i class="ti ti-rosette-discount-check"></i></div>
+                <div class="cert-sig">
+                  <div class="cert-sig-line"></div>
+                  <div class="cert-sig-name">4 de junio, 2026</div>
+                  <div class="cert-sig-role">Fecha de emisión</div>
+                </div>
+              </div>
+              <div class="cert-id">ID: IQ-2026-SQL-0047 · intelisisq.academy/verify</div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:16px; display:flex; gap:8px; justify-content:center;">
+            <button class="btn-secondary"><i class="ti ti-download"></i> Descargar PDF</button>
+            <button class="btn-secondary"><i class="ti ti-share"></i> Compartir</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
