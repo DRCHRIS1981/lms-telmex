@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IntelisisQ Academy — LMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    /* ── AUTH SCREEN ── */
+    #auth-root {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #F8F7F4;
+    }
+    .auth-card {
+      width: 380px; background: #fff;
+      border: 1px solid rgba(0,0,0,0.10); border-radius: 14px;
+      padding: 36px 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .auth-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 16px; margin-bottom: 28px;
+      justify-content: center;
+    }
+    .auth-logo-mark {
+      width: 36px; height: 36px; background: #185FA5;
+      border-radius: 9px; display: flex; align-items: center;
+      justify-content: center; color: #fff; font-weight: 700; font-size: 14px;
+    }
+    .auth-title { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; text-align:center; }
+    .auth-sub   { font-size: 13px; color: #888; text-align: center; margin-bottom: 24px; }
+    .auth-field { margin-bottom: 14px; }
+    .auth-field label { display: block; font-size: 13px; font-weight: 500; color: #333; margin-bottom: 5px; }
+    .auth-field input {
+      width: 100%; padding: 9px 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; outline: none;
+      transition: border-color 0.15s; background: #fff; color: #1a1a1a;
+    }
+    .auth-field input:focus { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
+    .auth-btn {
+      width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 500;
+      background: #185FA5; color: #fff; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; margin-top: 4px; transition: opacity 0.15s;
+    }
+    .auth-btn:hover { opacity: 0.88; }
+    .auth-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .auth-toggle {
+      text-align: center; font-size: 13px; color: #888; margin-top: 16px;
+    }
+    .auth-toggle a { color: #185FA5; cursor: pointer; text-decoration: none; font-weight: 500; }
+    .auth-toggle a:hover { text-decoration: underline; }
+    .auth-error {
+      background: #FAECE7; color: #993C1D; border-radius: 8px;
+      padding: 10px 14px; font-size: 13px; margin-bottom: 14px; display: none;
+    }
+    #register-form { display: none; }
+    /* loading spinner */
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 13px; color: #888; padding: 12px 0; }
+  </style>
+</head>
+<body>
+
+<!-- ══ AUTH ══════════════════════════════════ -->
+<div id="auth-root">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">IQ</div>
+      IntelisisQ Academy
+    </div>
+
+    <div class="auth-error" id="auth-error"></div>
+
+    <!-- LOGIN -->
+    <div id="login-form">
+      <div class="auth-title">Iniciar sesión</div>
+      <div class="auth-sub">Accede a tu plataforma de aprendizaje</div>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="tu@correo.com" />
+      </div>
+      <div class="auth-field">
+        <label>Contraseña</label>
+        <input type="password" id="login-password" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') handleLogin()" />
+      </div>
+      <button class="auth-btn" id="btn-login" data-label="Entrar" onclick="handleLogin()">Entrar</button>
+      <div class="auth-toggle">
+        ¿No tienes cuenta? <a onclick="toggleAuthMode()">Regístrate gratis</a>
+      </div>
+    </div>
+
+    <!-- REGISTRO -->
+    <div id="register-form">
+      <div class="auth-title">Crear cuenta</div>
+      <div class="auth-sub">Regístrate para empezar a aprender</div>
+      <div class="auth-field">
+        <label>Nombre completo</label>
+        <input type="text" id="reg-nombre" placeholder="Ana Ramírez" />
+      </div>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="reg-email" placeholder="tu@correo.com" />
+      </div>
+      <div class="auth-field">
+        <label>Contraseña</label>
+        <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" />
+      </div>
+      <button class="auth-btn" id="btn-register" data-label="Crear cuenta" onclick="handleRegister()">Crear cuenta</button>
+      <div class="auth-toggle">
+        ¿Ya tienes cuenta? <a onclick="toggleAuthMode()">Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ════════════════════════════════════ -->
+<div id="app-root" style="display:none; flex-direction:column; min-height:100vh;">
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="logo">
+      <div class="logo-mark">IQ</div>
+      IntelisisQ Academy
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showView('dashboard')">
+        <i class="ti ti-home"></i> Inicio
+      </button>
+      <button class="nav-tab" onclick="showView('lesson')">
+        <i class="ti ti-book"></i> Lecciones
+      </button>
+      <button class="nav-tab" onclick="showView('quiz')">
+        <i class="ti ti-clipboard-check"></i> Quiz
+      </button>
+      <button class="nav-tab" onclick="showView('progress')">
+        <i class="ti ti-chart-bar"></i> Progreso
+      </button>
+      <button class="nav-tab" onclick="showView('certificate')">
+        <i class="ti ti-award"></i> Certificados
+      </button>
+    </div>
+    <div class="user-pill" onclick="handleLogout()" title="Cerrar sesión">
+      <div class="avatar" id="user-avatar">U</div>
+      <span id="user-nombre">Usuario</span>
+      <i class="ti ti-logout" style="font-size:14px; margin-left:4px; color:#888;"></i>
+    </div>
+  </nav>
+
+  <div class="main-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Módulos</div>
+        <button class="sidebar-item active" onclick="showView('dashboard')">
+          <i class="ti ti-layout-dashboard"></i> Dashboard
+        </button>
+        <button class="sidebar-item" onclick="showView('lesson')">
+          <i class="ti ti-book"></i> Ver lecciones
+        </button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Mi avance</div>
+        <button class="sidebar-item" onclick="showView('progress')">
+          <i class="ti ti-chart-line"></i> Ver progreso
+        </button>
+        <button class="sidebar-item" onclick="showView('quiz')">
+          <i class="ti ti-pencil"></i> Evaluaciones
+        </button>
+        <button class="sidebar-item" onclick="showView('certificate')">
+          <i class="ti ti-award"></i> Certificados
+        </button>
+      </div>
+      <div class="progress-ring">
+        <div class="prog-label">Progreso general</div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="prog-fill-global" style="width:0%; background:#185FA5;"></div>
+        </div>
+        <div style="font-size:12px; color:#888; margin-top:4px;" id="prog-pct-text">0% completado</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="page-header">
+          <h1>Bienvenido</h1>
+          <p>Continúa donde lo dejaste.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Lecciones completadas</div>
+            <div class="stat-value" id="stat-completadas">—</div>
+            <div class="stat-sub" id="stat-total">cargando...</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Promedio en quizzes</div>
+            <div class="stat-value" id="stat-quiz">—</div>
+            <div class="stat-sub">últimos intentos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Certificados obtenidos</div>
+            <div class="stat-value" id="stat-certs">—</div>
+            <div class="stat-sub">con 80% o más</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Módulos disponibles</div>
+            <div class="stat-value">3</div>
+            <div class="stat-sub">SQL · ERP · SDK</div>
+          </div>
+        </div>
+        <div class="section-title">Cursos disponibles</div>
+        <div class="course-grid" id="cursos-grid">
+          <div class="loading-text">Cargando cursos...</div>
+        </div>
+      </div>
+
+      <!-- LESSON VIEW -->
+      <div class="view" id="view-lesson">
+        <div class="page-header">
+          <h1 id="lesson-module-title">Lecciones</h1>
+        </div>
+        <div id="lesson-loading" class="loading-text" style="display:none;">Cargando lecciones...</div>
+        <div class="lesson-layout">
+          <div>
+            <div class="lesson-player">
+              <div class="video-placeholder">
+                <div class="play-btn"><i class="ti ti-player-play"></i></div>
+                <div class="video-label" id="lesson-video-label">Selecciona una lección</div>
+              </div>
+              <div class="lesson-info">
+                <div class="lesson-title" id="lesson-title">—</div>
+                <div class="lesson-body" id="lesson-body"></div>
+                <pre class="code-block" id="lesson-code" style="display:none;"></pre>
+                <div class="lesson-body" id="lesson-extra"></div>
+                <div class="lesson-nav">
+                  <button class="btn-primary" onclick="nextLesson()">
+                    Siguiente lección <i class="ti ti-arrow-right"></i>
+                  </button>
+                  <button class="btn-secondary" onclick="showView('quiz')">Ir al quiz</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="lessons-list-header">Contenido del módulo</div>
+            <div id="lessons-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ VIEW -->
+      <div class="view" id="view-quiz">
+        <div class="page-header">
+          <h1 id="quiz-titulo">Quiz</h1>
+          <p>Selecciona un curso para iniciar su evaluación.</p>
+        </div>
+
+        <!-- Selector de curso para quiz -->
+        <div id="quiz-course-selector" style="margin-bottom:24px; display:flex; gap:12px; flex-wrap:wrap;"></div>
+
+        <div id="quiz-loading" class="loading-text" style="display:none;">Cargando preguntas...</div>
+
+        <div class="quiz-container">
+          <div class="quiz-header">
+            <span class="quiz-progress-text" id="q-counter">Pregunta 1</span>
+            <div class="quiz-prog"><div class="quiz-prog-fill" id="q-prog-fill" style="width:0%"></div></div>
+          </div>
+          <div id="quiz-area"></div>
+          <div id="quiz-nav" style="display:flex; gap:8px; margin-top:4px;">
+            <button class="btn-primary" id="btn-check" onclick="checkAnswer()" style="display:none;">Verificar respuesta</button>
+            <button class="btn-secondary" id="btn-next" onclick="nextQuestion()" style="display:none;">Siguiente <i class="ti ti-arrow-right"></i></button>
+          </div>
+          <div id="quiz-result" class="quiz-result-card" style="display:none;">
+            <div style="font-size:36px; margin-bottom:12px;">🎉</div>
+            <div class="result-score" id="result-score"></div>
+            <div class="result-msg" id="result-msg"></div>
+            <button class="btn-primary" onclick="resetQuiz()">Intentar de nuevo</button>
+            <button class="btn-secondary" style="margin-left:8px;" onclick="showView('certificate')">Ver certificados</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS VIEW -->
+      <div class="view" id="view-progress">
+        <div class="page-header">
+          <h1>Mi progreso</h1>
+          <p>Seguimiento por módulo y actividad reciente.</p>
+        </div>
+        <div class="progress-grid" id="progress-modulos">
+          <div class="loading-text">Cargando progreso...</div>
+        </div>
+        <div class="section-title" style="margin-top:8px;">Historial de quizzes</div>
+        <div class="activity-list" id="activity-list">
+          <div class="activity-item">
+            <div style="font-size:13px; color:#888; padding:4px;">Sin actividad registrada.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICATE VIEW -->
+      <div class="view" id="view-certificate">
+        <div class="page-header">
+          <h1>Certificados</h1>
+          <p>Obtenidos al completar un quiz con 80% o más.</p>
+        </div>
+        <div id="cert-container" style="display:flex; flex-direction:column; align-items:center;">
+          <div class="loading-text">Cargando certificados...</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Archivos del proyecto -->
+<script src="assets/supabase.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  // Renderizar selector de cursos en la vista Quiz una vez que carguen
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const sel = document.getElementById('quiz-course-selector');
+      if (!sel || !allCursos.length) return;
+      allCursos.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = `btn-secondary`;
+        btn.innerHTML = `${c.emoji} ${c.titulo}`;
+        btn.onclick = () => abrirQuizCurso(c.id);
+        sel.appendChild(btn);
+      });
+    }, 2000);
+  });
+</script>
+</body>
+</html>
