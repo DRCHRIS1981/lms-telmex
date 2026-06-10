@@ -2,7 +2,6 @@
 // APP.JS — Lógica principal con Supabase
 // =============================================
 
-// ── Estado global ─────────────────────────────
 let currentUser    = null;
 let currentPerfil  = null;
 let allCursos      = [];
@@ -17,11 +16,18 @@ let answered       = false;
 
 // ── INIT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  // Escuchar cambios de sesión
   sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
       currentUser   = session.user;
       currentPerfil = await getPerfil(session.user.id);
+
+      // Verificar rol leyendo perfil directamente
+      const rol = currentPerfil?.rol;
+      if (rol === 'admin') {
+        window.location.href = 'admin.html';
+        return;
+      }
+
       mostrarApp();
       await cargarDashboard();
     } else {
@@ -41,7 +47,6 @@ function mostrarAuth() {
 function mostrarApp() {
   document.getElementById('auth-root').style.display = 'none';
   document.getElementById('app-root').style.display  = 'flex';
-  // Mostrar nombre en navbar
   const nombre = currentPerfil?.nombre || currentUser?.email?.split('@')[0] || 'Usuario';
   document.getElementById('user-nombre').textContent = nombre;
   document.getElementById('user-avatar').textContent = nombre.charAt(0).toUpperCase();
@@ -75,13 +80,7 @@ async function handleLogin() {
   setBtnLoading('btn-login', true);
   try {
     await login(email, password);
-    // Esperar a que la sesión esté lista
-    await new Promise(resolve => setTimeout(resolve, 800));
-    const { data: rolData, error } = await sb.rpc('get_my_rol');
-    console.log('Rol detectado:', rolData, error);
-    if (rolData === 'admin') {
-      window.location.href = 'admin.html';
-    }
+    // La redirección la maneja onAuthStateChange según el rol
   } catch (e) {
     showAuthError('Correo o contraseña incorrectos.');
   } finally {
@@ -113,8 +112,8 @@ async function handleLogout() {
 function setBtnLoading(id, loading) {
   const btn = document.getElementById(id);
   if (!btn) return;
-  btn.disabled     = loading;
-  btn.textContent  = loading ? 'Cargando...' : btn.dataset.label;
+  btn.disabled    = loading;
+  btn.textContent = loading ? 'Cargando...' : btn.dataset.label;
 }
 
 // ── NAVEGACIÓN ────────────────────────────────
@@ -143,12 +142,8 @@ async function cargarDashboard() {
   try {
     allCursos = await getCursos();
     renderCursos();
-    if (currentUser) {
-      await actualizarStats();
-    }
-  } catch (e) {
-    console.error('Error cargando dashboard:', e);
-  }
+    if (currentUser) await actualizarStats();
+  } catch (e) { console.error('Error cargando dashboard:', e); }
 }
 
 async function actualizarStats() {
@@ -173,7 +168,6 @@ async function actualizarStats() {
   const certs = await getCertificados(currentUser.id);
   document.getElementById('stat-certs').textContent = certs.length;
 
-  // Progreso general en sidebar
   const pct = totalLecciones ? Math.round((completadas / totalLecciones) * 100) : 0;
   document.getElementById('prog-fill-global').style.width = pct + '%';
   document.getElementById('prog-pct-text').textContent    = pct + '% completado';
@@ -196,8 +190,7 @@ function renderCursos() {
         <div class="course-meta"><i class="ti ti-clock"></i> ${curso.duracion}</div>
         <div class="course-progress">
           <div style="display:flex; justify-content:space-between; font-size:11px; color:#888; margin-top:8px;">
-            <span>Progreso</span>
-            <span id="pct-curso-${curso.id}">—</span>
+            <span>Progreso</span><span id="pct-curso-${curso.id}">—</span>
           </div>
           <div class="course-prog-bar">
             <div class="course-prog-fill" id="bar-curso-${curso.id}" style="width:0%; background:${barColor(curso.tag)};"></div>
@@ -206,7 +199,6 @@ function renderCursos() {
       </div>`;
     grid.appendChild(card);
 
-    // Cargar progreso async
     if (currentUser) {
       calcularProgresoCurso(currentUser.id, curso.id).then(pct => {
         const pctEl = document.getElementById(`pct-curso-${curso.id}`);
@@ -231,14 +223,11 @@ async function abrirCurso(cursoId) {
   showView('lesson');
   setLoading('lesson-loading', true);
   try {
-    allLecciones   = await getLecciones(cursoId);
-    currentLesson  = 0;
+    allLecciones  = await getLecciones(cursoId);
+    currentLesson = 0;
     renderLesson();
-  } catch (e) {
-    console.error('Error cargando lecciones:', e);
-  } finally {
-    setLoading('lesson-loading', false);
-  }
+  } catch (e) { console.error('Error cargando lecciones:', e); }
+  finally { setLoading('lesson-loading', false); }
 }
 
 function setLesson(idx) {
@@ -259,12 +248,8 @@ function renderLesson() {
   document.getElementById('lesson-extra').textContent        = l.nota_extra || '';
 
   const codeEl = document.getElementById('lesson-code');
-  if (l.codigo) {
-    codeEl.textContent  = l.codigo;
-    codeEl.style.display = 'block';
-  } else {
-    codeEl.style.display = 'none';
-  }
+  if (l.codigo) { codeEl.textContent = l.codigo; codeEl.style.display = 'block'; }
+  else codeEl.style.display = 'none';
 
   renderLessonList();
 }
@@ -287,22 +272,16 @@ function renderLessonList() {
         <div class="lesson-dur">${les.duracion}</div>
       </div>`;
 
-    if (les.estado !== 'locked') {
-      btn.onclick = () => setLesson(i);
-    } else {
-      btn.style.opacity = '0.5';
-      btn.style.cursor  = 'not-allowed';
-    }
+    if (les.estado !== 'locked') btn.onclick = () => setLesson(i);
+    else { btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
     listEl.appendChild(btn);
   });
 }
 
 async function nextLesson() {
-  // Marcar lección actual como completada
   if (currentUser && allLecciones[currentLesson]) {
-    try {
-      await marcarLeccionCompleta(currentUser.id, allLecciones[currentLesson].id);
-    } catch (e) { console.warn('Error guardando progreso:', e); }
+    try { await marcarLeccionCompleta(currentUser.id, allLecciones[currentLesson].id); }
+    catch (e) { console.warn('Error guardando progreso:', e); }
   }
   const next = currentLesson + 1;
   if (next < allLecciones.length && allLecciones[next].estado !== 'locked') {
@@ -322,25 +301,22 @@ async function abrirQuizCurso(cursoId) {
     document.getElementById('quiz-titulo').textContent = 'Quiz: ' + (curso?.titulo || '');
     currentQ = 0; score = 0;
     renderQuiz();
-  } catch (e) {
-    console.error('Error cargando quiz:', e);
-  } finally {
-    setLoading('quiz-loading', false);
-  }
+  } catch (e) { console.error('Error cargando quiz:', e); }
+  finally { setLoading('quiz-loading', false); }
 }
 
 function renderQuiz() {
   if (!quizPreguntas.length) {
-    document.getElementById('quiz-area').innerHTML = '<p style="color:var(--text-sec)">No hay preguntas disponibles para este curso.</p>';
+    document.getElementById('quiz-area').innerHTML = '<p style="color:var(--text-sec)">No hay preguntas disponibles.</p>';
     return;
   }
-  const q = quizPreguntas[currentQ];
+  const q    = quizPreguntas[currentQ];
   const opts = typeof q.opciones === 'string' ? JSON.parse(q.opciones) : q.opciones;
 
-  document.getElementById('q-counter').textContent     = `Pregunta ${currentQ + 1} de ${quizPreguntas.length}`;
-  document.getElementById('q-prog-fill').style.width   = `${((currentQ + 1) / quizPreguntas.length) * 100}%`;
-  document.getElementById('btn-check').style.display   = 'inline-flex';
-  document.getElementById('btn-next').style.display    = 'none';
+  document.getElementById('q-counter').textContent   = `Pregunta ${currentQ + 1} de ${quizPreguntas.length}`;
+  document.getElementById('q-prog-fill').style.width = `${((currentQ + 1) / quizPreguntas.length) * 100}%`;
+  document.getElementById('btn-check').style.display = 'inline-flex';
+  document.getElementById('btn-next').style.display  = 'none';
   selected = null; answered = false;
 
   const area = document.getElementById('quiz-area');
@@ -400,8 +376,7 @@ function nextQuestion() { currentQ++; renderQuiz(); }
 async function showResult() {
   document.getElementById('quiz-nav').style.display  = 'none';
   document.getElementById('quiz-area').style.display = 'none';
-  const resultEl = document.getElementById('quiz-result');
-  resultEl.style.display = 'block';
+  document.getElementById('quiz-result').style.display = 'block';
 
   const pct = Math.round((score / quizPreguntas.length) * 100);
   document.getElementById('result-score').textContent = `${score} de ${quizPreguntas.length} correctas — ${pct}%`;
@@ -410,15 +385,14 @@ async function showResult() {
     : 'Sigue practicando — necesitas al menos 80% para obtener el certificado.';
 
   if (currentUser && currentCursoId) {
-    try {
-      await guardarResultado(currentUser.id, currentCursoId, score, quizPreguntas.length);
-    } catch (e) { console.warn('Error guardando resultado:', e); }
+    try { await guardarResultado(currentUser.id, currentCursoId, score, quizPreguntas.length); }
+    catch (e) { console.warn('Error guardando resultado:', e); }
   }
 }
 
 function resetQuiz() {
   currentQ = 0; score = 0; selected = null; answered = false;
-  document.getElementById('quiz-nav').style.display  = 'flex';
+  document.getElementById('quiz-nav').style.display    = 'flex';
   document.getElementById('quiz-result').style.display = 'none';
   renderQuiz();
 }
@@ -458,7 +432,6 @@ async function cargarProgreso() {
       container.appendChild(card);
     }
 
-    // Historial de quizzes
     const historial = await getHistorialQuiz(currentUser.id);
     const actEl     = document.getElementById('activity-list');
     if (actEl && historial.length) {
@@ -503,7 +476,7 @@ async function cargarCertificados() {
     container.innerHTML = certs.map(cert => `
       <div class="certificate" style="margin-bottom:32px;">
         <div class="cert-accent"></div>
-        <div class="cert-logo-big">IntelisisQ Academy</div>
+        <div class="cert-logo-big">Telmex Christian's Academy</div>
         <div class="cert-headline">Certifica que</div>
         <div class="cert-name">${nombre}</div>
         <div class="cert-headline" style="margin-top:4px;">ha completado satisfactoriamente el curso</div>
@@ -513,7 +486,7 @@ async function cargarCertificados() {
           <div class="cert-sig">
             <div class="cert-sig-line"></div>
             <div class="cert-sig-name">Director Académico</div>
-            <div class="cert-sig-role">IntelisisQ Academy</div>
+            <div class="cert-sig-role">Telmex Christian's Academy</div>
           </div>
           <div class="cert-seal"><i class="ti ti-rosette-discount-check"></i></div>
           <div class="cert-sig">
@@ -522,7 +495,7 @@ async function cargarCertificados() {
             <div class="cert-sig-role">Fecha de emisión</div>
           </div>
         </div>
-        <div class="cert-id">ID: ${cert.folio} · intelisisq.academy/verify</div>
+        <div class="cert-id">ID: ${cert.folio}</div>
       </div>`).join('');
   } catch (e) {
     container.innerHTML = '<p style="color:var(--text-sec)">Error cargando certificados.</p>';
