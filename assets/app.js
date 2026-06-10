@@ -75,12 +75,13 @@ async function handleLogin() {
   setBtnLoading('btn-login', true);
   try {
     await login(email, password);
-    // Detectar rol y redirigir
-    const { data: rolData } = await sb.rpc('get_my_rol');
+    // Esperar a que la sesión esté lista
+    await new Promise(resolve => setTimeout(resolve, 800));
+    const { data: rolData, error } = await sb.rpc('get_my_rol');
+    console.log('Rol detectado:', rolData, error);
     if (rolData === 'admin') {
       window.location.href = 'admin.html';
     }
-    // Si es alumno se queda en index.html (el onAuthStateChange lo maneja)
   } catch (e) {
     showAuthError('Correo o contraseña incorrectos.');
   } finally {
