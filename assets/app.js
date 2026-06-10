@@ -75,6 +75,12 @@ async function handleLogin() {
   setBtnLoading('btn-login', true);
   try {
     await login(email, password);
+    // Detectar rol y redirigir
+    const { data: rolData } = await sb.rpc('get_my_rol');
+    if (rolData === 'admin') {
+      window.location.href = 'admin.html';
+    }
+    // Si es alumno se queda en index.html (el onAuthStateChange lo maneja)
   } catch (e) {
     showAuthError('Correo o contraseña incorrectos.');
   } finally {
