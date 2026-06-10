@@ -80,7 +80,11 @@ async function editarCalificacion(resultadoId, nuevoPorcentaje) {
 
 // ── Cursos ────────────────────────────────────
 async function getCursos() {
-  const { data, error } = await sb.from('cursos').select('*').order('orden');
+  const { data, error } = await sb
+    .from('cursos')
+    .select('*')
+    .eq('activo', true)
+    .order('orden');
   if (error) throw error;
   return data || [];
 }
