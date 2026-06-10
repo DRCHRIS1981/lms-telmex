@@ -11,9 +11,9 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 async function adminLogin(email, password) {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
-  // Verificar que sea admin
-  const { data: perfil } = await sb.from('profiles').select('rol').eq('id', data.user.id).single();
-  if (!perfil || perfil.rol !== 'admin') {
+  // Usar función segura que no depende de RLS
+  const { data: rolData } = await sb.rpc('get_my_rol');
+  if (rolData !== 'admin') {
     await sb.auth.signOut();
     throw new Error('No tienes permisos de administrador.');
   }
