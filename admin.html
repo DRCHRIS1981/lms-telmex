@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Telmex Christian's Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #185FA5; --blue-light: #E6F1FB;
+      --green: #1D9E75; --green-light: #E1F5EE;
+      --red: #993C1D;   --red-light: #FAECE7;
+      --amber: #BA7517; --amber-light: #FAEEDA;
+      --text: #1a1a1a; --text-sec: #5F5E5A; --text-ter: #999;
+      --bg: #fff; --surf: #F8F7F4; --border: rgba(0,0,0,0.10);
+      --font: 'Inter', system-ui, sans-serif;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: var(--font); background: var(--surf); color: var(--text); min-height: 100vh; }
+
+    /* ── LOGIN ── */
+    #admin-login {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center; background: var(--surf);
+    }
+    .login-card {
+      width: 360px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 36px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    }
+    .login-badge {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 15px; margin-bottom: 8px; justify-content: center;
+    }
+    .login-badge-mark {
+      width: 36px; height: 36px; background: var(--blue); border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 13px;
+    }
+    .login-subtitle { text-align: center; font-size: 12px; color: var(--text-ter); margin-bottom: 28px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .login-title { font-size: 19px; font-weight: 600; text-align: center; margin-bottom: 4px; }
+    .login-sub   { font-size: 13px; color: var(--text-sec); text-align: center; margin-bottom: 24px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--font);
+      border: 1px solid var(--border); border-radius: var(--radius); outline: none;
+      background: var(--bg); color: var(--text); transition: border-color 0.15s;
+      resize: vertical;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.1);
+    }
+    .btn-primary {
+      width: 100%; padding: 10px; border-radius: var(--radius); font-size: 14px;
+      font-weight: 500; background: var(--blue); color: #fff; border: none;
+      cursor: pointer; font-family: var(--font); transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .error-box {
+      background: var(--red-light); color: var(--red); border-radius: var(--radius);
+      padding: 10px 14px; font-size: 13px; margin-bottom: 14px; display: none;
+    }
+
+    /* ── PANEL LAYOUT ── */
+    #admin-panel {
+      display: none; grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .admin-sidebar {
+      background: var(--bg); border-right: 1px solid var(--border);
+      padding: 20px 12px; position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px; font-weight: 600;
+      font-size: 14px; margin-bottom: 8px; padding: 0 8px;
+    }
+    .brand-mark {
+      width: 30px; height: 30px; background: var(--blue); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 12px; flex-shrink: 0;
+    }
+    .sidebar-tag {
+      font-size: 10px; color: var(--text-ter); text-transform: uppercase;
+      letter-spacing: 0.1em; padding: 0 8px; margin-bottom: 16px;
+    }
+    .admin-nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius); cursor: pointer; font-size: 14px;
+      color: var(--text-sec); border: none; background: transparent;
+      width: 100%; text-align: left; font-family: var(--font);
+      transition: background 0.12s, color 0.12s; margin-bottom: 2px;
+    }
+    .admin-nav-item:hover { background: var(--surf); color: var(--text); }
+    .admin-nav-item.active { background: var(--blue-light); color: var(--blue); font-weight: 500; }
+    .sidebar-spacer { flex: 1; }
+    .sidebar-user {
+      padding: 10px; border-top: 1px solid var(--border); font-size: 13px;
+      color: var(--text-sec); display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-avatar {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 11px; font-weight: 600; flex-shrink: 0;
+    }
+    .btn-logout {
+      margin-left: auto; border: none; background: transparent; cursor: pointer;
+      color: var(--text-ter); font-size: 16px; padding: 2px;
+    }
+    .btn-logout:hover { color: var(--red); }
+
+    /* MAIN CONTENT */
+    .admin-main { padding: 28px 32px; overflow-y: auto; }
+    .admin-section { display: none; }
+    .page-title { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .page-sub   { font-size: 14px; color: var(--text-sec); margin-bottom: 24px; }
+
+    /* STATS */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 18px;
+    }
+    .stat-card .label { font-size: 12px; color: var(--text-sec); margin-bottom: 6px; }
+    .stat-card .value { font-size: 28px; font-weight: 600; }
+    .stat-card .icon  { font-size: 20px; margin-bottom: 8px; }
+
+    /* TABLES */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th {
+      text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
+      color: var(--text-sec); border-bottom: 1px solid var(--border); background: var(--surf);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .admin-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafafa; }
+
+    /* BUTTONS */
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius); font-size: 14px;
+      font-weight: 500; background: var(--blue); color: #fff; border: none;
+      cursor: pointer; font-family: var(--font); transition: opacity 0.15s; margin-bottom: 16px;
+    }
+    .btn-add:hover { opacity: 0.88; }
+    .btn-sec {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius); font-size: 14px;
+      font-weight: 500; background: transparent; color: var(--text-sec);
+      border: 1px solid var(--border); cursor: pointer; font-family: var(--font);
+      transition: background 0.12s; margin-bottom: 16px; margin-left: 8px;
+    }
+    .btn-sec:hover { background: var(--surf); }
+    .btn-table {
+      padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      border: none; cursor: pointer; font-family: var(--font); transition: opacity 0.15s;
+    }
+    .btn-table:hover { opacity: 0.8; }
+    .btn-info   { background: var(--blue-light); color: var(--blue); }
+    .btn-warn   { background: var(--amber-light); color: var(--amber); }
+    .btn-danger { background: var(--red-light); color: var(--red); }
+
+    /* SEARCH */
+    .search-bar {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .search-bar input {
+      flex: 1; padding: 8px 12px; font-size: 14px; font-family: var(--font);
+      border: 1px solid var(--border); border-radius: var(--radius); outline: none;
+      background: var(--bg);
+    }
+    .search-bar input:focus { border-color: var(--blue); }
+
+    /* BADGES */
+    .badge-green { background: var(--green-light); color: var(--green); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .badge-red   { background: var(--red-light); color: var(--red); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .tag-pill    { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .tag-sql  { background: var(--blue-light); color: var(--blue); }
+    .tag-erp  { background: var(--green-light); color: var(--green); }
+    .tag-sdk  { background: var(--amber-light); color: var(--amber); }
+
+    /* CURSO CARD */
+    .curso-card-admin {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px;
+    }
+
+    /* LECCION ROW */
+    .leccion-row {
+      display: flex; align-items: center; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .leccion-row:last-child { border-bottom: none; }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: var(--bg); border-radius: var(--radius-lg); padding: 28px;
+      width: 520px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    .modal-box.wide { width: 700px; }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .modal-title { font-size: 17px; font-weight: 600; }
+    .modal-close {
+      border: none; background: transparent; cursor: pointer; font-size: 20px;
+      color: var(--text-ter); line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+    .modal-btn-save {
+      padding: 9px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+      background: var(--blue); color: #fff; border: none; cursor: pointer; font-family: var(--font);
+    }
+    .modal-btn-save:hover { opacity: 0.88; }
+    .modal-btn-cancel {
+      padding: 9px 20px; border-radius: var(--radius); font-size: 14px;
+      background: transparent; color: var(--text-sec); border: 1px solid var(--border);
+      cursor: pointer; font-family: var(--font);
+    }
+
+    /* DETALLE ALUMNO */
+    .detalle-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .detalle-avatar {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 20px; font-weight: 600; flex-shrink: 0;
+    }
+    .detalle-section { font-weight: 600; font-size: 14px; margin: 16px 0 8px; }
+
+    /* HINT */
+    .field-hint { font-size: 11px; color: var(--text-ter); margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══════════════════════════════════ -->
+<div id="admin-login">
+  <div class="login-card">
+    <div class="login-badge">
+      <div class="login-badge-mark">TX</div>
+      Telmex Christian's Academy
+    </div>
+    <div class="login-subtitle">Panel de Administración</div>
+    <div class="login-title">Acceso restringido</div>
+    <div class="login-sub">Solo administradores académicos</div>
+    <div class="error-box" id="login-error"></div>
+    <div class="field">
+      <label>Correo electrónico</label>
+      <input type="email" id="a-email" placeholder="admin@telmex.com" />
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="a-password" placeholder="••••••••"
+             onkeydown="if(event.key==='Enter') handleAdminLogin()" />
+    </div>
+    <button class="btn-primary" id="btn-admin-login" onclick="handleAdminLogin()">
+      Entrar al panel
+    </button>
+  </div>
+</div>
+
+<!-- ══ PANEL ══════════════════════════════════ -->
+<div id="admin-panel">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">TX</div>
+      Admin Panel
+    </div>
+    <div class="sidebar-tag">Telmex Academy</div>
+
+    <button class="admin-nav-item active" id="nav-dashboard" onclick="cargarSeccion('dashboard')">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </button>
+    <button class="admin-nav-item" id="nav-alumnos" onclick="cargarSeccion('alumnos')">
+      <i class="ti ti-users"></i> Alumnos
+    </button>
+    <button class="admin-nav-item" id="nav-cursos" onclick="cargarSeccion('cursos')">
+      <i class="ti ti-book"></i> Cursos y Lecciones
+    </button>
+    <button class="admin-nav-item" id="nav-certificados" onclick="cargarSeccion('certificados')">
+      <i class="ti ti-award"></i> Certificados
+    </button>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">A</div>
+      <span id="admin-nombre" style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Admin</span>
+      <button class="btn-logout" onclick="handleAdminLogout()" title="Cerrar sesión">
+        <i class="ti ti-logout"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <!-- DASHBOARD -->
+    <div class="admin-section" id="sec-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Resumen general de la plataforma</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="icon">👨‍🎓</div><div class="label">Alumnos activos</div><div class="value" id="st-alumnos">—</div></div>
+        <div class="stat-card"><div class="icon">📚</div><div class="label">Cursos activos</div><div class="value" id="st-cursos">—</div></div>
+        <div class="stat-card"><div class="icon">📖</div><div class="label">Lecciones</div><div class="value" id="st-lecciones">—</div></div>
+        <div class="stat-card"><div class="icon">📝</div><div class="label">Quizzes tomados</div><div class="value" id="st-quizzes">—</div></div>
+        <div class="stat-card"><div class="icon">🏆</div><div class="label">Certificados emitidos</div><div class="value" id="st-certs">—</div></div>
+        <div class="stat-card"><div class="icon">📊</div><div class="label">Promedio global</div><div class="value" id="st-promedio">—</div></div>
+      </div>
+      <div style="background:var(--blue-light); border-radius:var(--radius-lg); padding:16px; font-size:14px; color:var(--blue);">
+        <strong>💡 Acceso rápido:</strong> Ve a <strong>Cursos y Lecciones</strong> para agregar contenido nuevo, o a <strong>Alumnos</strong> para ver el progreso de cada usuario.
+      </div>
+    </div>
+
+    <!-- ALUMNOS -->
+    <div class="admin-section" id="sec-alumnos">
+      <div class="page-title">Alumnos</div>
+      <div class="page-sub">Gestiona usuarios, progreso y calificaciones</div>
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar por nombre o correo..." oninput="cargarAlumnos(this.value)" />
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Correo</th><th>Lecciones</th>
+              <th>Quizzes</th><th>Promedio</th><th>Certs.</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-alumnos">
+            <tr><td colspan="7" style="color:#888; padding:16px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CURSOS -->
+    <div class="admin-section" id="sec-cursos">
+      <div class="page-title">Cursos y Lecciones</div>
+      <div class="page-sub">Crea y edita cursos, lecciones y preguntas de quiz</div>
+      <button class="btn-add" onclick="abrirNuevoCurso()">
+        <i class="ti ti-plus"></i> Nuevo curso
+      </button>
+      <div id="lista-cursos"></div>
+    </div>
+
+    <!-- CERTIFICADOS -->
+    <div class="admin-section" id="sec-certificados">
+      <div class="page-title">Certificados emitidos</div>
+      <div class="page-sub">Historial completo de certificados. Puedes revocarlos si es necesario.</div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Alumno</th><th>Correo</th><th>Curso</th><th>Folio</th><th>Fecha</th><th>Acción</th></tr>
+          </thead>
+          <tbody id="tabla-certs">
+            <tr><td colspan="6" style="color:#888; padding:16px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════ -->
+
+<!-- Modal alumno -->
+<div class="modal-overlay" id="modal-alumno">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <div class="modal-title">Detalle del alumno</div>
+      <button class="modal-close" onclick="cerrarModal('modal-alumno')">✕</button>
+    </div>
+    <div id="modal-alumno-body"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-alumno')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal curso -->
+<div class="modal-overlay" id="modal-curso">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="form-curso-titulo">Nuevo curso</div>
+      <button class="modal-close" onclick="cerrarModal('modal-curso')">✕</button>
+    </div>
+    <input type="hidden" id="curso-id" />
+    <div class="field"><label>Título *</label><input type="text" id="curso-titulo" placeholder="Ej: SQL para reportes en Intelisis" /></div>
+    <div class="field"><label>Descripción</label><textarea id="curso-desc" rows="2" placeholder="Descripción breve del curso"></textarea></div>
+    <div class="field">
+      <label>Categoría *</label>
+      <select id="curso-tag">
+        <option value="sql">SQL</option>
+        <option value="erp">ERP</option>
+        <option value="sdk">SDK</option>
+      </select>
+    </div>
+    <div class="field"><label>Emoji</label><input type="text" id="curso-emoji" placeholder="📚" style="width:80px;" /></div>
+    <div class="field"><label>Duración estimada</label><input type="text" id="curso-duracion" placeholder="Ej: 5h 30min" /></div>
+    <div class="field"><label>Orden</label><input type="number" id="curso-orden" placeholder="1" /></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-curso')">Cancelar</button>
+      <button class="modal-btn-save" onclick="guardarCurso()">Guardar curso</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal lecciones -->
+<div class="modal-overlay" id="modal-lecciones">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <div class="modal-title">Lecciones — <span id="lecciones-curso-nombre"></span></div>
+      <button class="modal-close" onclick="cerrarModal('modal-lecciones')">✕</button>
+    </div>
+    <button class="btn-add" onclick="abrirNuevaLeccion()"><i class="ti ti-plus"></i> Nueva lección</button>
+    <div id="lista-lecciones"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-lecciones')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar lección -->
+<div class="modal-overlay" id="modal-leccion">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Lección</div>
+      <button class="modal-close" onclick="cerrarModal('modal-leccion')">✕</button>
+    </div>
+    <input type="hidden" id="lec-id" />
+    <div class="field"><label>Título *</label><input type="text" id="lec-titulo" placeholder="Título de la lección" /></div>
+    <div class="field"><label>Contenido</label><textarea id="lec-cuerpo" rows="4" placeholder="Explicación de la lección..."></textarea></div>
+    <div class="field">
+      <label>Código de ejemplo</label>
+      <textarea id="lec-codigo" rows="5" placeholder="SELECT * FROM tabla WHERE..."></textarea>
+      <div class="field-hint">Escribe el código en texto plano, sin HTML.</div>
+    </div>
+    <div class="field"><label>Nota adicional</label><textarea id="lec-extra" rows="2" placeholder="Consejo o nota al final de la lección..."></textarea></div>
+    <div class="field"><label>Duración</label><input type="text" id="lec-dur" placeholder="15 min" /></div>
+    <div class="field">
+      <label>Estado</label>
+      <select id="lec-estado">
+        <option value="done">Completada (done)</option>
+        <option value="current">En curso (current)</option>
+        <option value="locked">Bloqueada (locked)</option>
+      </select>
+    </div>
+    <div class="field"><label>Orden</label><input type="number" id="lec-orden" /></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-leccion')">Cancelar</button>
+      <button class="modal-btn-save" onclick="guardarLeccion()">Guardar lección</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal preguntas -->
+<div class="modal-overlay" id="modal-preguntas">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <div class="modal-title">Quiz — <span id="preguntas-curso-nombre"></span></div>
+      <button class="modal-close" onclick="cerrarModal('modal-preguntas')">✕</button>
+    </div>
+    <button class="btn-add" onclick="abrirNuevaPregunta()"><i class="ti ti-plus"></i> Nueva pregunta</button>
+    <div id="lista-preguntas"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-preguntas')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar pregunta -->
+<div class="modal-overlay" id="modal-pregunta">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Pregunta de quiz</div>
+      <button class="modal-close" onclick="cerrarModal('modal-pregunta')">✕</button>
+    </div>
+    <input type="hidden" id="preg-id" />
+    <div class="field"><label>Pregunta *</label><textarea id="preg-texto" rows="2" placeholder="¿Cuál es la cláusula para filtrar filas?"></textarea></div>
+    <div class="field">
+      <label>Opciones de respuesta *</label>
+      <textarea id="preg-opciones" rows="4" placeholder="Una opción por línea:&#10;WHERE&#10;HAVING&#10;GROUP BY&#10;ORDER BY"></textarea>
+      <div class="field-hint">Escribe una opción por línea.</div>
+    </div>
+    <div class="field">
+      <label>Índice de la respuesta correcta *</label>
+      <input type="number" id="preg-correcta" min="0" placeholder="0" />
+      <div class="field-hint">0 = primera opción, 1 = segunda, etc.</div>
+    </div>
+    <div class="field"><label>Explicación</label><textarea id="preg-explic" rows="2" placeholder="Explicación que verá el alumno al responder..."></textarea></div>
+    <div class="field"><label>Orden</label><input type="number" id="preg-orden" /></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cerrarModal('modal-pregunta')">Cancelar</button>
+      <button class="modal-btn-save" onclick="guardarPregunta()">Guardar pregunta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/admin-supabase.js"></script>
+<script src="assets/admin-app.js"></script>
+</body>
+</html>
